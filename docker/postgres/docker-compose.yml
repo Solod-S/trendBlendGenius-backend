@@ -1,0 +1,43 @@
+# Use postgres/example user/password credentials
+version: '3.8'
+
+# npx prisma migrate dev --name init
+# "docker:up": "docker compose -f ./docker/postgres/docker-compose.yml up -d --build",
+# "docker:down": "docker compose -f ./docker/postgres/docker-compose.yml down",
+# https://www.youtube.com/watch?v=TAYW3t1ajAY - auth nestJS
+# https://www.youtube.com/watch?v=xHg0IJDl1RY -postgress prisma db
+
+services:
+    db:
+        image: postgres:latest
+        restart: always
+        container_name: nest_test_postgres
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-user}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+            POSTGRES_DB: ${POSTGRES_DB:-postgres_db}
+        volumes:
+            - postgres-data:${PGDATA:-/data/postgres}
+        ports:
+            - '${DB_PORT:-5432}:5432'
+    pgadmin:
+        container_name: pgadmin_container
+        build: ./pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-123456}
+        volumes:
+            - pgadmin:/root/.pgadmin
+        ports:
+            - '${PGADMIN_PORT:-5050}:80'
+        networks:
+            - postgres
+        restart: unless-stopped
+
+volumes:
+    postgres-data:
+    pgadmin:
+
+networks:
+    postgres:
+        driver: bridge
