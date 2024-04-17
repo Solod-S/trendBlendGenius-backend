@@ -1,31 +1,33 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "@prisma": ["src/prisma"],
-      "@prisma/*": ["src/prisma/*"],
-      "@user": ["src/user"],
-      "@user/*": ["src/user/*"],
-      "@common": ["libs/common/src"],
-      "@common/*": ["libs/common/src/*"],
-      "@auth": ["src/auth"],
-      "@auth/*": ["src/auth/*"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "declaration": true,
+        "removeComments": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2021",
+        "sourceMap": true,
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "incremental": true,
+        "skipLibCheck": true,
+        "strictNullChecks": false,
+        "noImplicitAny": false,
+        "strictBindCallApply": false,
+        "forceConsistentCasingInFileNames": false,
+        "noFallthroughCasesInSwitch": false,
+        "paths": {
+            "@prisma": ["src/prisma"],
+            "@prisma/*": ["src/prisma/*"],
+            "@user": ["src/entities/user"],
+            "@user/*": ["src/entities/user/*"],
+            "@common": ["libs/common/src"],
+            "@common/*": ["libs/common/src/*"],
+            "@auth": ["src/entities/auth"],
+            "@auth/*": ["src/entities/auth/*"],
+            "@middleware": ["src/middleware"],
+            "@middleware/*": ["src/middleware*"]
+        }
     }
-  }
 }
