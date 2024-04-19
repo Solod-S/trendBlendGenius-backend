@@ -83,4 +83,8 @@ export class AuthService {
             return null;
         }
     }
+
+    async deleteRefreshTokens(token: string) {
+        return this.prismaService.token.delete({ where: { token: token } });
+    }
 }

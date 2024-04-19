@@ -3,14 +3,15 @@ import {
     Body,
     ClassSerializerInterceptor,
     Controller,
+    Get,
     HttpStatus,
     Post,
     Res,
     UnauthorizedException,
     UseInterceptors,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { UserАgent } from '@common/decorators';
+import { Response } from 'express';
+import { Cookies, Public, UserАgent } from '@common/decorators';
 import { LoginDto, RegisterDto } from './dto';
 import { AuthService } from './auth.service';
 import { UserResponse } from '../users/responses';
@@ -19,8 +20,7 @@ import { ConfigService } from '@nestjs/config';
 
 const REFRESH_TOKEN = 'refreshtoken';
 
-@UseInterceptors(ClassSerializerInterceptor)
-// for UserResponse transformer
+@Public()
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -50,7 +50,8 @@ export class AuthController {
 
         res.status(HttpStatus.CREATED).json(tokens.accessToken);
     }
-
+    @UseInterceptors(ClassSerializerInterceptor)
+    // for UserResponse transformer
     @Post('register')
     async register(@Body() dto: RegisterDto) {
         const user = await this.authService.register(dto);
@@ -70,5 +71,18 @@ export class AuthController {
         }
         this.setRefreshTokenTocookies(tokens, res);
         // return token and cookies
+    }
+
+    @Get('logout')
+    async logout(@Cookies(REFRESH_TOKEN) refreshToken: string, @Res() res: Response) {
+        console.log(`request.cookies`);
+        if (!refreshToken) {
+            res.sendStatus(HttpStatus.OK);
+            return;
+        }
+        await this.authService.deleteRefreshTokens(refreshToken);
+        res.cookie(REFRESH_TOKEN, '', { httpOnly: true, secure: true, expires: new Date() });
+        // clear cookies
+        res.sendStatus(HttpStatus.OK);
     }
 }

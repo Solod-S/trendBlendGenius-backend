@@ -16,10 +16,10 @@ const httpsOptions = {
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { httpsOptions });
     app.setGlobalPrefix('api');
-    await app.listen(PORT);
     app.use(cookieParaser());
     app.use(new LoggerMiddleware().use);
     app.use(new CorsMiddleware().use);
+    await app.listen(PORT);
 }
 
 const color = {

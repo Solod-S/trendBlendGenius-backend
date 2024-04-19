@@ -1,11 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { convertToSecondsUtil } from '@common/utils';
+import { JwtPayload } from '@auth/interfaces';
 
 @Injectable()
 export class UsersService {
@@ -43,6 +44,7 @@ export class UsersService {
         await this.cacheManager.set(savedUser.email, savedUser);
         return savedUser;
     }
+
     async findOne(idOrEmail: string, isReset = false): Promise<User> {
         if (isReset) {
             // isReset used for Login
@@ -67,5 +69,17 @@ export class UsersService {
             return user;
         }
         return user;
+    }
+
+    async delete(id: string, user: JwtPayload) {
+        console.log(`user.id !== id`, user.id !== id);
+        console.log(`user.id`, user.id);
+        console.log(`id`, id);
+
+        if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
+            throw new ForbiddenException();
+        }
+        await Promise.all([this.cacheManager.del(id), this.cacheManager.del(user.email)]);
+        return this.prismaService.user.delete({ where: { id }, select: { id: true } });
     }
 }
