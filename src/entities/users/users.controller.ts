@@ -9,9 +9,9 @@ export class UsersController {
 
     @Delete('delete/:id')
     async deleteUser(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: JwtPayload) {
-        // @CurrentUser('id') userId: string тогда только айди возьмем
-        // ParseUUIDPipe если строка не uuid то даст ошибку
-        // console.log(`user`, user);
+        // @CurrentUser('id') userId: string - then just take the ID
+        // ParseUUIDPipe - if the string is not uuid it will give an error
+
         return this.userService.delete(id, user);
     }
 }

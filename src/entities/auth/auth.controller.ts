@@ -17,8 +17,7 @@ import { AuthService } from './auth.service';
 import { UserResponse } from '../users/responses';
 import { Tokens } from './interfaces';
 import { ConfigService } from '@nestjs/config';
-
-const REFRESH_TOKEN = 'refreshtoken';
+import { REFRESH_TOKEN } from '@common/constants';
 
 @Public()
 @Controller('auth')
@@ -84,5 +83,23 @@ export class AuthController {
         res.cookie(REFRESH_TOKEN, '', { httpOnly: true, secure: true, expires: new Date() });
         // clear cookies
         res.sendStatus(HttpStatus.OK);
+    }
+
+    @Get('refresh-tokens')
+    async refreshTokens(
+        @Cookies(REFRESH_TOKEN) refreshToken: string,
+        @Res() res: Response,
+        @UserАgent() agent: string,
+    ) {
+        console.log(`refreshToken`, refreshToken);
+        if (!refreshToken) {
+            throw new UnauthorizedException();
+        }
+        const tokens = await this.authService.refreshTokens(refreshToken, agent);
+        if (!tokens) {
+            throw new BadRequestException(`Error in refresh tokens`);
+        }
+        this.setRefreshTokenTocookies(tokens, res);
+        // return token and cookies
     }
 }
