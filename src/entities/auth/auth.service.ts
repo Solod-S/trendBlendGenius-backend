@@ -49,6 +49,10 @@ export class AuthService {
                 id: user.id,
                 email: user.email,
                 roles: user.roles,
+                newsCategory: user.newsCategory,
+                query: user.query,
+                language: user.language,
+                country: user.country,
             });
         const refreshToken = await this.getRefreshToken(user.id, agent);
         return { accessToken, refreshToken };

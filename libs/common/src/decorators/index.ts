@@ -8,3 +8,5 @@ export * from './current-user.decorator';
 // get user data from header/token (used to compare users when deleting)
 export * from './isPublic.decorator';
 // make the route public
+export * from './roles.decorator';
+// to work with user roles

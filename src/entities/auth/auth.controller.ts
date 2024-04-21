@@ -10,6 +10,7 @@ import {
     UnauthorizedException,
     UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags, ApiResponse, ApiBody, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Cookies, Public, UserАgent } from '@common/decorators';
 import { LoginDto, RegisterDto } from './dto';
@@ -20,6 +21,7 @@ import { ConfigService } from '@nestjs/config';
 import { REFRESH_TOKEN } from '@common/constants';
 
 @Public()
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -47,8 +49,21 @@ export class AuthController {
         // secure: true - only via https (we set it to be fels for development, true for product)
         // path: '/', where cookies are available (path: '/' - available on all pages)
 
-        res.status(HttpStatus.CREATED).json(tokens.accessToken);
+        res.status(HttpStatus.CREATED).json({ accessToken: tokens.accessToken.split(' ')[1] });
     }
+
+    @ApiOperation({ summary: 'Register new user' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+    @ApiBody({
+        schema: { type: 'object', properties: { email: { type: 'string' }, password: { type: 'string' } } },
+        examples: {
+            example1: {
+                value: { email: 'test@gmail.com', password: '123456' },
+                description: 'User credential data example',
+            },
+        },
+    })
     @UseInterceptors(ClassSerializerInterceptor)
     // for UserResponse transformer
     @Post('register')
