@@ -59,33 +59,29 @@ export class AuthService {
     }
 
     async register(dto: RegisterDto) {
-        try {
-            const user: User = await this.userService.findOne(dto.email);
-            if (user) {
-                throw new ConflictException(`User with such email: ${dto.email} already exists`);
-            }
-            const newUser = await this.userService.save(dto);
-            return newUser;
-        } catch (err) {
-            console.log(`Error in user find`, err);
-            this.logger.error(err);
-            return null;
+        const user: User = await this.userService.findOne(dto.email);
+        if (user) {
+            throw new ConflictException(`User with such email: ${dto.email} already exists`);
         }
+        const newUser = await this.userService.save(dto);
+        return newUser;
     }
 
-    async login(dto: LoginDto, agent: string): Promise<Tokens> {
-        try {
-            const user: User = await this.userService.findOne(dto.email, true);
-            if (!user || !compareSync(dto.password, user.password)) {
-                throw new UnauthorizedException(`Wrong password or email`);
-            }
-            const tokens = await this.generateTokens(user, agent);
-            return tokens;
-        } catch (err) {
-            console.log(`Error in user find`, err);
-            this.logger.error(err);
-            return null;
+    async login(dto: LoginDto, agent: string): Promise<{ tokens: Tokens; user: User }> {
+        const user: User = await this.userService.findOne(dto.email, true);
+        if (!user || !compareSync(dto.password, user.password)) {
+            console.log(0);
+            throw new UnauthorizedException(`Wrong password or email`);
         }
+        const tokens = await this.generateTokens(user, agent);
+        return { tokens, user };
+    }
+
+    async getUserFromToken(refreshToken: string) {
+        const { userId } = await this.prismaService.token.findUnique({ where: { token: refreshToken } });
+        const user = await this.userService.findOne(userId);
+        console.log(user);
+        return user;
     }
 
     async refreshTokens(refreshToken: string, agent: string): Promise<Tokens> {

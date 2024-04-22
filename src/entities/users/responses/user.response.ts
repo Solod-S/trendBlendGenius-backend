@@ -5,8 +5,6 @@ import { Exclude } from 'class-transformer';
 export class UserResponse implements User {
     id: string;
     email: string;
-    openAIkey: string;
-    newsApiKey: string;
     newsCategory: NewsCategories[];
     language: Languages[];
     country: Countries[];
@@ -28,6 +26,12 @@ export class UserResponse implements User {
 
     @Exclude()
     isBlocked: boolean;
+
+    @Exclude()
+    openAIkey: string;
+
+    @Exclude()
+    newsApiKey: string;
 
     updatedAt: Date;
     roles: Role[];
