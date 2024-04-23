@@ -51,7 +51,7 @@ export class USER_DTO {
     }
 }
 
-export class AUTH_REGISTRATED {
+export class REGISTRATION_RESPONSE {
     @ApiProperty({
         description: 'Response message',
         nullable: false,
@@ -75,7 +75,7 @@ export class AUTH_REGISTRATED {
     }
 }
 
-export class AUTH_REGISTRATED_BAD_REQUEST {
+export class REGISTRATION_RESPONSE_BAD_REQUEST {
     @ApiProperty({
         description: 'Response message',
         nullable: false,
@@ -99,11 +99,11 @@ export class AUTH_REGISTRATED_BAD_REQUEST {
     constructor(statusCode: number, message: string = '', error: string = '') {
         this.message = message;
         this.error = error;
-        this.statusCode = 201;
+        this.statusCode = 400;
     }
 }
 
-export class AUTH_LOGIN {
+export class USER_RESPONSE {
     @ApiProperty({
         description: 'Response message',
         nullable: false,
@@ -132,11 +132,11 @@ export class AUTH_LOGIN {
         this.message = message;
         this.accessToken = accessToken;
         this.user = user;
-        this.statusCode = 201;
+        this.statusCode = 200;
     }
 }
 
-export class AUTH_LOGIN_BAD_REQUEST {
+export class USER_RESPONSE_UNAUTHORIZED {
     @ApiProperty({
         description: 'Response message',
         nullable: false,
@@ -159,6 +159,80 @@ export class AUTH_LOGIN_BAD_REQUEST {
 
     constructor(statusCode: number, message: string = '', error: string = '') {
         this.message = message;
+        this.error = error;
+        this.statusCode = 401;
+    }
+}
+
+export class LOGOUT_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 200,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '') {
+        this.message = message;
+        this.statusCode = 200;
+    }
+}
+
+export class REFRESH_TOKENS_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA2ZjVhN2M5LTIyMzYtNDkwNS05NjcyLThmYTA0OWIzMDdmNyIsImVtYWlsIjoidGVzdDExQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiLCJBRE1JTiJdLCJuZXdzQ2F0ZWdvcnkiOltdLCJxdWVyeSI6bnVsbCwibGFuZ3VhZ2UiOltdLCJjb3VudHJ5IjpbXSwiaWF0IjoxNzEzNzA3MTM5LCJleHAiOjE3MTQ2NTc1Mzl9.Q_6HqRXw6PfdiweoltxUw8XoQ674mkXlQ13nI0ltwG0',
+    })
+    accessToken: string;
+
+    @ApiProperty({ description: 'User information' })
+    user: USER_DTO;
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 200,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '', user: USER_DTO, accessToken = '') {
+        this.message = message;
+        this.accessToken = accessToken;
+        this.user = user;
+        this.statusCode = 200;
+    }
+}
+
+export class REFRESH_TOKENS_RESPONSE_UNAUTHORIZED {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Unauthorized',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Unauthorized',
+        nullable: false,
+        default: 401,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
         this.error = error;
         this.statusCode = 401;
     }

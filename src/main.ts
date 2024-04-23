@@ -26,6 +26,7 @@ async function bootstrap() {
         .setTitle('Trend-Blend-Genius API')
         .setDescription('The API was created to create cool content for your social networks.')
         .setVersion(packageJson.version)
+        // .addCookieAuth('optional-session-id')
         .addBearerAuth(
             {
                 type: 'http',

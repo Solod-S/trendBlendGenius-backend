@@ -27,10 +27,13 @@ import { Tokens } from './interfaces';
 import { ConfigService } from '@nestjs/config';
 import { REFRESH_TOKEN } from '@common/constants';
 import {
-    AUTH_REGISTRATED_BAD_REQUEST,
-    AUTH_REGISTRATED,
-    AUTH_LOGIN,
-    AUTH_LOGIN_BAD_REQUEST,
+    REGISTRATION_RESPONSE_BAD_REQUEST,
+    REGISTRATION_RESPONSE,
+    USER_RESPONSE,
+    USER_RESPONSE_UNAUTHORIZED,
+    LOGOUT_RESPONSE,
+    REFRESH_TOKENS_RESPONSE_UNAUTHORIZED,
+    REFRESH_TOKENS_RESPONSE,
 } from './entities/auth.entity';
 import { User } from '@prisma/client';
 import { transformUser } from '@common/utils';
@@ -63,7 +66,7 @@ export class AuthController {
         // secure: true - only via https (we set it to be fels for development, true for product)
         // path: '/', where cookies are available (path: '/' - available on all pages)
 
-        res.status(HttpStatus.CREATED).json({
+        res.status(HttpStatus.OK).json({
             message: 'Successful request',
             accessToken: tokens.accessToken.split(' ')[1],
             user: transformUser(user),
@@ -72,11 +75,11 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Register' })
-    @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: AUTH_REGISTRATED, isArray: false })
+    @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: REGISTRATION_RESPONSE, isArray: false })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description: 'Bad Request',
-        type: AUTH_REGISTRATED_BAD_REQUEST,
+        type: REGISTRATION_RESPONSE_BAD_REQUEST,
         isArray: false,
     })
     @ApiBody({
@@ -101,11 +104,11 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Login' })
-    @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: AUTH_LOGIN, isArray: false })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: USER_RESPONSE, isArray: false })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description: 'Unauthorized',
-        type: AUTH_LOGIN_BAD_REQUEST,
+        type: USER_RESPONSE_UNAUTHORIZED,
         isArray: false,
     })
     @ApiBody({
@@ -117,7 +120,6 @@ export class AuthController {
             },
         },
     })
-    @ApiCookieAuth('refreshToken')
     @Post('login')
     async login(@Body() dto: LoginDto, @Res() res: Response, @UserАgent() agent: string) {
         console.log(`dto`, dto);
@@ -130,24 +132,35 @@ export class AuthController {
         this.setRefreshTokenTocookies(tokens, res, user);
     }
 
+    @ApiOperation({ summary: 'Logout' })
+    @ApiCookieAuth(REFRESH_TOKEN)
+    @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: LOGOUT_RESPONSE, isArray: false })
     @Get('logout')
     async logout(@Cookies(REFRESH_TOKEN) refreshToken: string, @Res() res: Response) {
         console.log(`request.cookies`);
         if (!refreshToken) {
-            res.sendStatus(HttpStatus.OK);
+            res.status(HttpStatus.OK).json({ message: 'Successful request', statusCode: 200 });
             return;
         }
         await this.authService.deleteRefreshTokens(refreshToken);
         res.cookie(REFRESH_TOKEN, '', { httpOnly: true, secure: true, expires: new Date() });
         // clear cookies
-        res.sendStatus(HttpStatus.OK);
+        res.status(HttpStatus.OK).json({ message: 'Successful request', statusCode: 200 });
+        return;
     }
 
-    @UseInterceptors(ClassSerializerInterceptor)
+    @ApiOperation({ summary: 'Refresh-tokens' })
+    @ApiCookieAuth(REFRESH_TOKEN)
+    @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: REFRESH_TOKENS_RESPONSE, isArray: false })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized',
+        type: REFRESH_TOKENS_RESPONSE_UNAUTHORIZED,
+        isArray: false,
+    })
     @Get('refresh-tokens')
     async refreshTokens(
         @Cookies(REFRESH_TOKEN) refreshToken: string,
-
         @Res() res: Response,
         @UserАgent() agent: string,
     ) {
