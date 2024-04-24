@@ -112,7 +112,7 @@ export class USER_RESPONSE {
     message: string;
 
     @ApiProperty({
-        description: 'Success status',
+        description: 'Access token',
         nullable: false,
         default:
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA2ZjVhN2M5LTIyMzYtNDkwNS05NjcyLThmYTA0OWIzMDdmNyIsImVtYWlsIjoidGVzdDExQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiLCJBRE1JTiJdLCJuZXdzQ2F0ZWdvcnkiOltdLCJxdWVyeSI6bnVsbCwibGFuZ3VhZ2UiOltdLCJjb3VudHJ5IjpbXSwiaWF0IjoxNzEzNzA3MTM5LCJleHAiOjE3MTQ2NTc1Mzl9.Q_6HqRXw6PfdiweoltxUw8XoQ674mkXlQ13nI0ltwG0',
@@ -194,7 +194,7 @@ export class REFRESH_TOKENS_RESPONSE {
     message: string;
 
     @ApiProperty({
-        description: 'Success status',
+        description: 'Access token',
         nullable: false,
         default:
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA2ZjVhN2M5LTIyMzYtNDkwNS05NjcyLThmYTA0OWIzMDdmNyIsImVtYWlsIjoidGVzdDExQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiLCJBRE1JTiJdLCJuZXdzQ2F0ZWdvcnkiOltdLCJxdWVyeSI6bnVsbCwibGFuZ3VhZ2UiOltdLCJjb3VudHJ5IjpbXSwiaWF0IjoxNzEzNzA3MTM5LCJleHAiOjE3MTQ2NTc1Mzl9.Q_6HqRXw6PfdiweoltxUw8XoQ674mkXlQ13nI0ltwG0',
@@ -219,6 +219,50 @@ export class REFRESH_TOKENS_RESPONSE {
 }
 
 export class REFRESH_TOKENS_RESPONSE_UNAUTHORIZED {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Unauthorized',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Unauthorized',
+        nullable: false,
+        default: 401,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = 401;
+    }
+}
+
+export class GET_USER_BY_IDorEMAIL_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({ description: 'User information' })
+    user: USER_DTO;
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 200,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '', user: USER_DTO) {
+        this.message = message;
+        this.user = user;
+        this.statusCode = 200;
+    }
+}
+
+export class GET_USER_BY_IDorEMAIL_RESPONSE_UNAUTHORIZED {
     @ApiProperty({
         description: 'Error message',
         nullable: false,

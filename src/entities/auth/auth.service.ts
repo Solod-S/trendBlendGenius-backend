@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { LoginDto, RegisterDto } from './dto';
 import { Token, User } from '@prisma/client';
@@ -78,7 +78,11 @@ export class AuthService {
     }
 
     async getUserFromToken(refreshToken: string) {
-        const { userId } = await this.prismaService.token.findUnique({ where: { token: refreshToken } });
+        const tokenData = await this.prismaService.token.findUnique({ where: { token: refreshToken } });
+        if (!tokenData) {
+            throw new BadRequestException();
+        }
+        const { userId } = tokenData;
         const user = await this.userService.findOne(userId);
         console.log(user);
         return user;

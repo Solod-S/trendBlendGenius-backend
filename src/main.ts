@@ -49,4 +49,7 @@ const color = {
     blue: '\x1b[34m',
 };
 
-bootstrap().then(() => Logger.log(`APP IS STARTED AT ${color.blue}https://localhost:${PORT}/api${color.reset}`));
+bootstrap().then(() => {
+    Logger.log(`APP IS STARTED AT ${color.blue}https://localhost:${PORT}/api${color.reset}`);
+    Logger.log(`SWAGGER IS STARTED AT ${color.blue}https://localhost:${PORT}/swagger${color.reset}`);
+});

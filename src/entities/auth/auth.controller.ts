@@ -10,14 +10,7 @@ import {
     UnauthorizedException,
     UseInterceptors,
 } from '@nestjs/common';
-import {
-    ApiTags,
-    ApiResponse,
-    ApiBody,
-    ApiOperation,
-    ApiCookieAuth,
-    // ApiSecurity
-} from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 import { Cookies, Public, UserАgent } from '@common/decorators';
 import { LoginDto, RegisterDto } from './dto';
@@ -133,7 +126,6 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Logout' })
-    @ApiCookieAuth(REFRESH_TOKEN)
     @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: LOGOUT_RESPONSE, isArray: false })
     @Get('logout')
     async logout(@Cookies(REFRESH_TOKEN) refreshToken: string, @Res() res: Response) {
@@ -150,7 +142,6 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Refresh-tokens' })
-    @ApiCookieAuth(REFRESH_TOKEN)
     @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: REFRESH_TOKENS_RESPONSE, isArray: false })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,

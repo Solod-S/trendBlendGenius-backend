@@ -24,13 +24,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPayload) {
-        console.log(`payload`, payload);
+        // console.log(`payload in JWT`, payload);
         // accepts what we put into the token !!!!!!!!!!!!!! (PROBLEM)
         // console.log(`payload`, typeof payload);
         const user = await this.userService.findOne(payload.id).catch((err) => {
             this.logger.error(err);
             return null;
         });
+        console.log(`user in JWT`, user);
         if (!user) {
             throw new UnauthorizedException();
         }

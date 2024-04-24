@@ -8,6 +8,7 @@ export class UserResponse implements User {
     newsCategory: NewsCategories[];
     language: Languages[];
     country: Countries[];
+    query: string;
 
     @Exclude()
     // исключаем
@@ -20,9 +21,6 @@ export class UserResponse implements User {
     @Exclude()
     // исключаем
     provider: Provider;
-
-    @Exclude()
-    query: string;
 
     @Exclude()
     isBlocked: boolean;
