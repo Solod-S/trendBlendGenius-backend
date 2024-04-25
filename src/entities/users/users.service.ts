@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { convertToSecondsUtil } from '@common/utils';
 import { JwtPayload } from '@auth/interfaces';
+import { updateUserDto } from '@auth/dto';
 
 @Injectable()
 export class UsersService {
@@ -69,6 +70,54 @@ export class UsersService {
             return user;
         }
         return user;
+    }
+    // update
+    // async update(id: string, user: JwtPayload, body: Partial<updateUserDto>) {
+    //     if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
+    //         throw new ForbiddenException();
+    //     }
+    //     // Подготовка данных для обновления
+    //     const data: Partial<updateUserDto> = {};
+    //     if (body.email) data.email = body.email;
+    //     if (body.password) data.password = body.password;
+    //     if (body.newsCategory) data.newsCategory = body.newsCategory;
+    //     if (body.query) data.query = body.query;
+    //     if (body.language) data.language = body.language;
+    //     if (body.country) data.country = body.country;
+    //     if (body.newsApiKey) data.newsApiKey = body.newsApiKey;
+    //     if (body.openAIkey) data.openAIkey = body.openAIkey;
+
+    //     // Обновление пользователя
+    //     return this.prismaService.user.update({
+    //         where: { id }, // Указываем id пользователя, которого нужно обновить
+    //         data, // Обновляем только те поля, которые приходят в body
+    //     });
+    // }
+
+    async update(id: string, user: JwtPayload, body: Partial<updateUserDto>) {
+        // Проверка, имеет ли пользователь право на обновление профиля
+        if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
+            throw new ForbiddenException();
+        }
+
+        // Подготовка данных для обновления
+        const data: any = {};
+        if (body.email) data.email = body.email;
+        if (body.password) data.password = body.password;
+        if (body.newsCategory) {
+            data.newsCategory = body.newsCategory.map((category) => ({ name: category }));
+        }
+        if (body.query) data.query = body.query;
+        if (body.language) data.language = body.language;
+        if (body.country) data.country = body.country;
+        if (body.newsApiKey) data.newsApiKey = body.newsApiKey;
+        if (body.openAIkey) data.openAIkey = body.openAIkey;
+
+        // Обновление пользователя
+        return this.prismaService.user.update({
+            where: { id }, // Указываем id пользователя, которого нужно обновить
+            data, // Обновляем только те поля, которые приходят в body
+        });
     }
 
     async delete(id: string, user: JwtPayload) {

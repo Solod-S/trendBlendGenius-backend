@@ -262,7 +262,59 @@ export class GET_USER_BY_IDorEMAIL_RESPONSE {
     }
 }
 
-export class GET_USER_BY_IDorEMAIL_RESPONSE_UNAUTHORIZED {
+export class GET_USER_BY_IDorEMAIL_RESPONSE_FORBIDDEN {
+    @ApiProperty({
+        description: 'Message',
+        nullable: false,
+        default: 'Forbidden resource',
+    })
+    message: string;
+
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Forbidden',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Unauthorized',
+        nullable: false,
+        default: 403,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '', message = '') {
+        this.message = message;
+        this.error = error;
+        this.statusCode = 403;
+    }
+}
+
+export class GET_YOUR_DATA_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({ description: 'User information' })
+    user: USER_DTO;
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 200,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '', user: USER_DTO) {
+        this.message = message;
+        this.user = user;
+        this.statusCode = 200;
+    }
+}
+
+export class GET_YOUR_DATA_UNAUTHORIZED_RESPONSE {
     @ApiProperty({
         description: 'Error message',
         nullable: false,
@@ -276,6 +328,25 @@ export class GET_USER_BY_IDorEMAIL_RESPONSE_UNAUTHORIZED {
     })
     statusCode: number;
 
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = 401;
+    }
+}
+
+export class GET_YOUR_DATA_RESPONSE_FORBIDDEN {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Forbidden',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Unauthorized',
+        nullable: false,
+        default: 403,
+    })
+    statusCode: number;
     constructor(statusCode: number, error: string = '') {
         this.error = error;
         this.statusCode = 401;

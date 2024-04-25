@@ -10,6 +10,8 @@ import {
     ClassSerializerInterceptor,
     UseGuards,
     HttpStatus,
+    Put,
+    Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserResponse } from './responses';
@@ -17,9 +19,13 @@ import { RolesGuard } from 'src/guards/role.guard';
 import { Role } from '@prisma/client';
 import { ApiOperation, ApiResponse, ApiTags, ApiSecurity } from '@nestjs/swagger';
 import {
-    GET_USER_BY_IDorEMAIL_RESPONSE_UNAUTHORIZED,
+    GET_USER_BY_IDorEMAIL_RESPONSE_FORBIDDEN,
     GET_USER_BY_IDorEMAIL_RESPONSE,
+    GET_YOUR_DATA_RESPONSE,
+    GET_YOUR_DATA_UNAUTHORIZED_RESPONSE,
+    GET_YOUR_DATA_RESPONSE_FORBIDDEN,
 } from '@auth/entities/auth.entity';
+import { updateUserDto } from '@auth/dto';
 
 @ApiTags('Users')
 @ApiSecurity('JWT', ['JWT'])
@@ -27,8 +33,8 @@ import {
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
 
+    //GET USER DATA
     @ApiOperation({ summary: 'Get user by id or email (ONLY FOR ADMIN)' })
-    // @ApiSecurity('JWT')
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Success',
@@ -36,9 +42,9 @@ export class UsersController {
         isArray: false,
     })
     @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        description: 'Unauthorized',
-        type: GET_USER_BY_IDorEMAIL_RESPONSE_UNAUTHORIZED,
+        status: HttpStatus.FORBIDDEN,
+        description: 'Forbidden',
+        type: GET_USER_BY_IDorEMAIL_RESPONSE_FORBIDDEN,
         isArray: false,
     })
     @UseGuards(RolesGuard)
@@ -54,6 +60,20 @@ export class UsersController {
         };
     }
 
+    //GET MY DATA
+    @ApiOperation({ summary: 'Get your data' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Success',
+        type: GET_YOUR_DATA_RESPONSE,
+        isArray: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized',
+        type: GET_YOUR_DATA_UNAUTHORIZED_RESPONSE,
+        isArray: false,
+    })
     @UseInterceptors(ClassSerializerInterceptor)
     @Get()
     async me(@CurrentUser('email') email: string) {
@@ -65,6 +85,40 @@ export class UsersController {
         };
     }
 
+    //UPDATE USER
+    @Put('/:id')
+    async updateUser(@Param('id') id: string, @Body() body: Partial<updateUserDto>, @CurrentUser() user: JwtPayload) {
+        // await this.userService.updateUser(id, body);
+        const updatedUser = await this.userService.update(id, user, body);
+        console.log(`body`, body);
+        return {
+            message: 'Successful request',
+            id,
+            // user: updatedUser,
+            statusCode: 200,
+        };
+    }
+
+    //DELETE USER
+    @ApiOperation({ summary: 'Delete user' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Success',
+        type: GET_YOUR_DATA_RESPONSE,
+        isArray: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized',
+        type: GET_YOUR_DATA_UNAUTHORIZED_RESPONSE,
+        isArray: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        description: 'Forbidden',
+        type: GET_YOUR_DATA_RESPONSE_FORBIDDEN,
+        isArray: false,
+    })
     @Delete('delete/:id')
     async deleteUser(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: JwtPayload) {
         // @CurrentUser('id') userId: string - then just take the ID
