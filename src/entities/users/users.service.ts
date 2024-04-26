@@ -1,22 +1,64 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import { Role, User } from '@prisma/client';
+import { Role, Token, User } from '@prisma/client';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { convertToSecondsUtil } from '@common/utils';
-import { JwtPayload } from '@auth/interfaces';
+import { JwtPayload, Tokens } from '@auth/interfaces';
 import { updateUserDto } from '@auth/dto';
+
+import { JwtService } from '@nestjs/jwt';
+import { v4 } from 'uuid';
+import { add } from 'date-fns';
 
 @Injectable()
 export class UsersService {
     constructor(
         private readonly prismaService: PrismaService,
+        private readonly jwtService: JwtService,
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         // https://docs.nestjs.com/techniques/caching
         private readonly configService: ConfigService,
     ) {}
+    private async getRefreshToken(userId: string, agent: string): Promise<Token> {
+        const _token = await this.prismaService.token.findFirst({
+            where: {
+                userId,
+                userAgent: agent,
+            },
+        });
+        const token = _token?.token ?? '';
+        return this.prismaService.token.upsert({
+            where: { token },
+            update: {
+                token: v4(),
+                exp: add(new Date(), { months: 1 }),
+            },
+            create: {
+                token: v4(),
+                exp: add(new Date(), { months: 1 }),
+                userId,
+                userAgent: agent,
+            },
+        });
+    }
+    private async generateTokens(user: User, agent: string): Promise<Tokens> {
+        const accessToken =
+            'Bearer ' +
+            this.jwtService.sign({
+                id: user.id,
+                email: user.email,
+                roles: user.roles,
+                newsCategory: user.newsCategory,
+                query: user.query,
+                language: user.language,
+                country: user.country,
+            });
+        const refreshToken = await this.getRefreshToken(user.id, agent);
+        return { accessToken, refreshToken };
+    }
 
     private hashPassword(password: string) {
         return hashSync(password, genSaltSync(10));
@@ -71,53 +113,30 @@ export class UsersService {
         }
         return user;
     }
-    // update
-    // async update(id: string, user: JwtPayload, body: Partial<updateUserDto>) {
-    //     if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
-    //         throw new ForbiddenException();
-    //     }
-    //     // Подготовка данных для обновления
-    //     const data: Partial<updateUserDto> = {};
-    //     if (body.email) data.email = body.email;
-    //     if (body.password) data.password = body.password;
-    //     if (body.newsCategory) data.newsCategory = body.newsCategory;
-    //     if (body.query) data.query = body.query;
-    //     if (body.language) data.language = body.language;
-    //     if (body.country) data.country = body.country;
-    //     if (body.newsApiKey) data.newsApiKey = body.newsApiKey;
-    //     if (body.openAIkey) data.openAIkey = body.openAIkey;
 
-    //     // Обновление пользователя
-    //     return this.prismaService.user.update({
-    //         where: { id }, // Указываем id пользователя, которого нужно обновить
-    //         data, // Обновляем только те поля, которые приходят в body
-    //     });
-    // }
-
-    async update(id: string, user: JwtPayload, body: Partial<updateUserDto>) {
-        // Проверка, имеет ли пользователь право на обновление профиля
+    async update(id: string, user: JwtPayload, body: Partial<updateUserDto>, agent: string) {
         if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
             throw new ForbiddenException();
         }
 
-        // Подготовка данных для обновления
         const data: any = {};
-        if (body.email) data.email = body.email;
-        if (body.password) data.password = body.password;
-        if (body.newsCategory) {
-            data.newsCategory = body.newsCategory.map((category) => ({ name: category }));
-        }
+        if (body.password) data.password = this.hashPassword(body.password);
+        if (body.newsCategory) data.newsCategory = body.newsCategory;
         if (body.query) data.query = body.query;
         if (body.language) data.language = body.language;
         if (body.country) data.country = body.country;
         if (body.newsApiKey) data.newsApiKey = body.newsApiKey;
         if (body.openAIkey) data.openAIkey = body.openAIkey;
 
-        // Обновление пользователя
-        return this.prismaService.user.update({
-            where: { id }, // Указываем id пользователя, которого нужно обновить
-            data, // Обновляем только те поля, которые приходят в body
+        if (Object.keys(data).length === 0) {
+            throw new BadRequestException();
+        }
+        const updatedUser = await this.prismaService.user.update({
+            where: { id },
+            data, // Update only those fields that come in body
         });
+        const tokens = await this.generateTokens(updatedUser, agent);
+        return { tokens, updatedUser };
     }
 
     async delete(id: string, user: JwtPayload) {

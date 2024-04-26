@@ -20,13 +20,13 @@ import { Tokens } from './interfaces';
 import { ConfigService } from '@nestjs/config';
 import { REFRESH_TOKEN } from '@common/constants';
 import {
-    REGISTRATION_RESPONSE_BAD_REQUEST,
+    REGISTRATION_RESPONSE_BAD_RESPONSE,
     REGISTRATION_RESPONSE,
     USER_RESPONSE,
-    USER_RESPONSE_UNAUTHORIZED,
     LOGOUT_RESPONSE,
-    REFRESH_TOKENS_RESPONSE_UNAUTHORIZED,
+    REFRESH_TOKENS_UNAUTHORIZED_RESPONSE,
     REFRESH_TOKENS_RESPONSE,
+    USER_UNAUTHORIZED_RESPONSE,
 } from './entities/auth.entity';
 import { User } from '@prisma/client';
 import { transformUser } from '@common/utils';
@@ -72,7 +72,7 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description: 'Bad Request',
-        type: REGISTRATION_RESPONSE_BAD_REQUEST,
+        type: REGISTRATION_RESPONSE_BAD_RESPONSE,
         isArray: false,
     })
     @ApiBody({
@@ -101,7 +101,7 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description: 'Unauthorized',
-        type: USER_RESPONSE_UNAUTHORIZED,
+        type: USER_UNAUTHORIZED_RESPONSE,
         isArray: false,
     })
     @ApiBody({
@@ -118,7 +118,6 @@ export class AuthController {
         console.log(`dto`, dto);
         const { tokens, user } = await this.authService.login(dto, agent);
         if (!tokens || !user) {
-            console.log(1);
             throw new BadRequestException(`Error login ${JSON.stringify(dto)}`);
         }
 
@@ -146,7 +145,7 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         description: 'Unauthorized',
-        type: REFRESH_TOKENS_RESPONSE_UNAUTHORIZED,
+        type: REFRESH_TOKENS_UNAUTHORIZED_RESPONSE,
         isArray: false,
     })
     @Get('refresh-tokens')

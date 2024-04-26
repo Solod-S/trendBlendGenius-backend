@@ -75,7 +75,7 @@ export class REGISTRATION_RESPONSE {
     }
 }
 
-export class REGISTRATION_RESPONSE_BAD_REQUEST {
+export class REGISTRATION_RESPONSE_BAD_RESPONSE {
     @ApiProperty({
         description: 'Response message',
         nullable: false,
@@ -136,7 +136,7 @@ export class USER_RESPONSE {
     }
 }
 
-export class USER_RESPONSE_UNAUTHORIZED {
+export class USER_UNAUTHORIZED_RESPONSE {
     @ApiProperty({
         description: 'Response message',
         nullable: false,
@@ -218,7 +218,7 @@ export class REFRESH_TOKENS_RESPONSE {
     }
 }
 
-export class REFRESH_TOKENS_RESPONSE_UNAUTHORIZED {
+export class REFRESH_TOKENS_UNAUTHORIZED_RESPONSE {
     @ApiProperty({
         description: 'Error message',
         nullable: false,
@@ -262,7 +262,7 @@ export class GET_USER_BY_IDorEMAIL_RESPONSE {
     }
 }
 
-export class GET_USER_BY_IDorEMAIL_RESPONSE_FORBIDDEN {
+export class GET_USER_BY_IDorEMAIL_FORBIDDEN_RESPONSE {
     @ApiProperty({
         description: 'Message',
         nullable: false,
@@ -334,7 +334,7 @@ export class GET_YOUR_DATA_UNAUTHORIZED_RESPONSE {
     }
 }
 
-export class GET_YOUR_DATA_RESPONSE_FORBIDDEN {
+export class GET_YOUR_DATA_FORBIDDEN_RESPONSE {
     @ApiProperty({
         description: 'Error message',
         nullable: false,
@@ -350,5 +350,78 @@ export class GET_YOUR_DATA_RESPONSE_FORBIDDEN {
     constructor(statusCode: number, error: string = '') {
         this.error = error;
         this.statusCode = 401;
+    }
+}
+
+export class UPDATE_YOUR_DATA_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({
+        description: 'Access token',
+        nullable: false,
+        default:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA2ZjVhN2M5LTIyMzYtNDkwNS05NjcyLThmYTA0OWIzMDdmNyIsImVtYWlsIjoidGVzdDExQGdtYWlsLmNvbSIsInJvbGVzIjpbIlVTRVIiLCJBRE1JTiJdLCJuZXdzQ2F0ZWdvcnkiOltdLCJxdWVyeSI6bnVsbCwibGFuZ3VhZ2UiOltdLCJjb3VudHJ5IjpbXSwiaWF0IjoxNzEzNzA3MTM5LCJleHAiOjE3MTQ2NTc1Mzl9.Q_6HqRXw6PfdiweoltxUw8XoQ674mkXlQ13nI0ltwG0',
+    })
+    accessToken: string;
+
+    @ApiProperty({ description: 'User information' })
+    user: USER_DTO;
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 200,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '', user: USER_DTO, accessToken = '') {
+        this.message = message;
+        this.accessToken = accessToken;
+        this.user = user;
+        this.statusCode = 200;
+    }
+}
+
+export class UPDATE_YOUR_DATA_UNAUTHORIZED_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Unauthorized',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Unauthorized',
+        nullable: false,
+        default: 401,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = 401;
+    }
+}
+
+export class UPDATE_YOUR_DATA_RESPONSE_BAD_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Bad Request',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Bad Request',
+        nullable: false,
+        default: 400,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = 400;
     }
 }
