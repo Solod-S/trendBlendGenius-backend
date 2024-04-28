@@ -45,6 +45,7 @@
         "date-fns": "^3.6.0",
         "express-session": "^1.18.0",
         "mkcert": "^1.5.1",
+        "newsapi": "^2.4.1",
         "oauth-1.0a": "^2.2.6",
         "passport": "^0.7.0",
         "passport-facebook": "^3.0.0",

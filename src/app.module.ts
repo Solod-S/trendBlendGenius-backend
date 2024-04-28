@@ -5,9 +5,10 @@ import { AuthModule } from './entities/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ArticlesModule } from './entities/articles/articles.module';
 
 @Module({
-    imports: [AuthModule, UsersModule, PrismaModule, ConfigModule.forRoot({ isGlobal: true })],
+    imports: [AuthModule, UsersModule, PrismaModule, ConfigModule.forRoot({ isGlobal: true }), ArticlesModule],
     providers: [
         {
             provide: APP_GUARD,

@@ -24,27 +24,42 @@ updatedAt DateTime @updatedAt @map("updated_at")
 roles Role[]
 provider Provider?
 Token     Token[]
+articles   Article[]  
 openAIkey String? 
 newsApiKey String? 
 newsCategory NewsCategories[]
 query String? 
 language Languages[]
 country Countries[]
-
 @@map("users")
 // table name for post-regress
 }
 
-
+model Article{
+id String @id @default(uuid())
+title String
+content String
+description String?
+author String?
+urlToImage String?
+url String
+source Json?
+publishedAt String
+createdAt DateTime @default(now()) @map("created_at")
+updatedAt DateTime @updatedAt @map("updated_at")
+user User? @relation(fields: [userId], references: [id], onDelete: Cascade) 
+userId String 
+@@map("articles")
+}
 
 
 model Token{
 token String @unique
 exp DateTime 
+userAgent String @map("user_agent")
 user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 // onDelete: Cascade if the user is deleted, then all tokens associated with it will be cascadedly deleted
 userId String 
-userAgent String @map("user_agent")
 @@map("tokens")
 // table name for post-regress
 }
@@ -62,6 +77,7 @@ enum NewsCategories {
   science
   sports
   technology
+  business
 }
 enum Languages {
   ar

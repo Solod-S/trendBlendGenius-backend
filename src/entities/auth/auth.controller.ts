@@ -67,6 +67,8 @@ export class AuthController {
         });
     }
 
+    //CREATE USER
+    @Post('register')
     @ApiOperation({ summary: 'Register' })
     @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: REGISTRATION_RESPONSE, isArray: false })
     @ApiResponse({
@@ -86,7 +88,6 @@ export class AuthController {
     })
     @UseInterceptors(ClassSerializerInterceptor)
     // for UserResponse transformer
-    @Post('register')
     async register(@Body() dto: RegisterDto) {
         const user = await this.authService.register(dto);
 
@@ -96,6 +97,8 @@ export class AuthController {
         return { message: 'Successful request', user: new UserResponse(user), statusCode: 201 };
     }
 
+    //LOGIN
+    @Post('login')
     @ApiOperation({ summary: 'Login' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: USER_RESPONSE, isArray: false })
     @ApiResponse({
@@ -113,7 +116,6 @@ export class AuthController {
             },
         },
     })
-    @Post('login')
     async login(@Body() dto: LoginDto, @Res() res: Response, @UserАgent() agent: string) {
         console.log(`dto`, dto);
         const { tokens, user } = await this.authService.login(dto, agent);
@@ -124,9 +126,10 @@ export class AuthController {
         this.setRefreshTokenTocookies(tokens, res, user);
     }
 
+    //LOGOUT
+    @Get('logout')
     @ApiOperation({ summary: 'Logout' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: LOGOUT_RESPONSE, isArray: false })
-    @Get('logout')
     async logout(@Cookies(REFRESH_TOKEN) refreshToken: string, @Res() res: Response) {
         console.log(`request.cookies`);
         if (!refreshToken) {
@@ -140,6 +143,8 @@ export class AuthController {
         return;
     }
 
+    //REFRESH TOKENS
+    @Get('refresh-tokens')
     @ApiOperation({ summary: 'Refresh-tokens' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: REFRESH_TOKENS_RESPONSE, isArray: false })
     @ApiResponse({
@@ -148,7 +153,6 @@ export class AuthController {
         type: REFRESH_TOKENS_UNAUTHORIZED_RESPONSE,
         isArray: false,
     })
-    @Get('refresh-tokens')
     async refreshTokens(
         @Cookies(REFRESH_TOKEN) refreshToken: string,
         @Res() res: Response,
