@@ -20,7 +20,7 @@ export class ArticlesController {
         @CurrentUser('id') id: string,
     ) {
         console.log(`id`, id);
-        const articles = await this.articleService.add(id);
-        return articles.articles[0];
+        const article = await this.articleService.createNewArticle(id);
+        return article;
     }
 }

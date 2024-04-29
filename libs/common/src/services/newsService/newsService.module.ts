@@ -1,5 +1,5 @@
 import { Module, Global } from '@nestjs/common';
-import { NewsService } from './newsService';
+import { NewsService } from './newsService.service';
 
 @Global()
 @Module({

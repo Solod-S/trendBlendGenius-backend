@@ -1,5 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import * as NewsAPI from 'newsapi';
 
+@Injectable()
 export class NewsService {
     constructor() {}
 
