@@ -1,4 +1,4 @@
-import { Provider } from '@prisma/client';
+import { Provider, Tones } from '@prisma/client';
 import { Role, User, NewsCategories, Languages, Countries } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
@@ -9,6 +9,9 @@ export class UserResponse implements User {
     language: Languages[];
     country: Countries[];
     query: string;
+    tone: Tones;
+    useEmojis: boolean;
+    endWithQuestion: boolean;
 
     @Exclude()
     // исключаем

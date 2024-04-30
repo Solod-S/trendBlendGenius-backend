@@ -13,14 +13,16 @@ export class ArticlesController {
         private readonly configService: ConfigService,
     ) {}
     //CREATE ARTICLE
-    @Get('create')
+    @Post('create')
     async createArticle(
-        // @Body()
-        // params: any,
+        @Body()
+        params: any,
         @CurrentUser('id') id: string,
     ) {
-        console.log(`id`, id);
-        const article = await this.articleService.createNewArticle(id);
+        // domain
+        const { domain } = params;
+        console.log(`domain`, domain);
+        const article = await this.articleService.createNewArticle(id, domain);
         return article;
     }
 }

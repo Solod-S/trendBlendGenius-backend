@@ -25,12 +25,18 @@ roles Role[]
 provider Provider?
 Token     Token[]
 articles   Article[]  
+
 openAIkey String? 
 newsApiKey String? 
 newsCategory NewsCategories[]
 query String? 
 language Languages[]
 country Countries[]
+
+tone Tones? @default(Excited)
+useEmojis Boolean @default(false)
+endWithQuestion Boolean @default(false)
+
 @@map("users")
 // table name for post-regress
 }
@@ -49,6 +55,7 @@ createdAt DateTime @default(now()) @map("created_at")
 updatedAt DateTime @updatedAt @map("updated_at")
 user User? @relation(fields: [userId], references: [id], onDelete: Cascade) 
 userId String 
+
 @@map("articles")
 }
 
@@ -64,11 +71,28 @@ userId String
 // table name for post-regress
 }
 
+enum Tones {
+Excited
+Happy
+Gracious
+Supportive
+Polite
+Respectful
+Provocative
+Controversial
+Disappointed
+Sad
+Frustrated
+Sarcastic
+Angry
+Nasty
+}
+
+
 enum Role {
   ADMIN
   USER
 }
-
 enum NewsCategories {
   all
   entertainment
@@ -161,3 +185,19 @@ enum Provider {
   GITHUB
   LINKEDIN
 }
+
+
+// 🎉 Excited
+// 😄 Happy
+// 🤗 Gracious
+// 👏 Supportive
+// 🙏 Polite
+// 🤔 Respectful
+// 😈 Provocative
+// 🤯 Controversial
+// 😔 Disappointed
+// 😢 Sad
+// 😤 Frustrated
+// 😏 Sarcastic
+// 😡 Angry
+// 😠 Nasty
