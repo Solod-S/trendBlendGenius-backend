@@ -23,6 +23,7 @@
         "prisma:migrate": "npx prisma migrate dev"
     },
     "dependencies": {
+        "@mozilla/readability": "^0.5.0",
         "@nestjs/axios": "^3.0.2",
         "@nestjs/cache-manager": "^2.2.2",
         "@nestjs/common": "^10.0.0",
@@ -44,6 +45,7 @@
         "crypto": "^1.0.1",
         "date-fns": "^3.6.0",
         "express-session": "^1.18.0",
+        "jsdom": "^24.0.0",
         "mkcert": "^1.5.1",
         "newsapi": "^2.4.1",
         "oauth-1.0a": "^2.2.6",

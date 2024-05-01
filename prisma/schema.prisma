@@ -36,6 +36,7 @@ country Countries[]
 tone Tones? @default(Excited)
 useEmojis Boolean @default(false)
 endWithQuestion Boolean @default(false)
+useLink Boolean @default(true)
 
 @@map("users")
 // table name for post-regress
@@ -46,6 +47,7 @@ id String @id @default(uuid())
 title String
 content String
 description String?
+html String 
 author String?
 urlToImage String?
 url String

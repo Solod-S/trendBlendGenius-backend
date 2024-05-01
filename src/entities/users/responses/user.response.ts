@@ -12,6 +12,7 @@ export class UserResponse implements User {
     tone: Tones;
     useEmojis: boolean;
     endWithQuestion: boolean;
+    useLink: boolean;
 
     @Exclude()
     // исключаем
