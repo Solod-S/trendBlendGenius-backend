@@ -3,10 +3,11 @@ import { PrismaService } from '@prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { NewsService } from '@common/services/newsService/newsService.service';
 import { OpenAIService } from '@common/services/openaiService/openaiService.service';
-import { newsapiArticle } from './dto/newsapiArticle';
+
 import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
+import { newsapiArticleDto } from './dto';
 
 @Injectable()
 export class ArticlesService {
@@ -17,14 +18,12 @@ export class ArticlesService {
         private readonly openAI: OpenAIService,
     ) {}
 
-    private async checkArticlesUniqueness(id: string, newArticles: newsapiArticle[]) {
+    private async checkArticlesUniqueness(id: string, newArticles: newsapiArticleDto[]) {
         const oldArticles = await this.prismaService.article.findMany({
             where: { userId: id },
         });
         const articleLinks = oldArticles.map((a) => a.url);
         const filteredArticle = newArticles.filter((art: any) => !articleLinks.includes(art.url));
-
-        console.log(`filteredArticle`, filteredArticle.length);
         return filteredArticle;
     }
 

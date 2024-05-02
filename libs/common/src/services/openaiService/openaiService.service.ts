@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
-import { articleConfig } from 'src/entities/articles/dto/articleConfig';
+import { articleConfigDto } from 'src/entities/articles/dto';
 import { articleTone, characterLimit, endWithQuestion, useEmojis } from '@common/constants';
 
 @Injectable()
 export class OpenAIService {
-    private async createRules(config: articleConfig, domain: string) {
+    private async createRules(config: articleConfigDto, domain: string) {
         let rules = 'As a commentator on that post you must follow these rules:';
         // tone, useEmojis, endWithQuestion
 
@@ -126,7 +126,7 @@ export class OpenAIService {
         }
     }
 
-    async rewriteArticle(apiKey: string, content: string, config: articleConfig, domain: string, title: string) {
+    async rewriteArticle(apiKey: string, content: string, config: articleConfigDto, domain: string, title: string) {
         try {
             const openai = new OpenAI({ apiKey });
 

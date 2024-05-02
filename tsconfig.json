@@ -27,6 +27,8 @@
             "@common/*": ["libs/common/src/*"],
             "@auth": ["src/entities/auth"],
             "@auth/*": ["src/entities/auth/*"],
+            "@articles": ["src/entities/articles"],
+            "@articles/*": ["src/entities/articles/*"],
             "@middleware": ["src/middleware"],
             "@middleware/*": ["src/middleware*"]
         }

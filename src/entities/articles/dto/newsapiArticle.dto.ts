@@ -1,4 +1,4 @@
-export interface newsapiArticle {
+export interface newsapiArticleDto {
     source: {
         id: string | null;
         name: string;
