@@ -128,7 +128,6 @@ export class UsersController {
     }
 
     //UPDATE USER
-    @Put('/:id')
     @ApiOperation({ summary: 'Update user' })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -169,6 +168,7 @@ export class UsersController {
             },
         },
     })
+    @Put('/:id')
     async updateUser(
         @Param('id') id: string,
         @Body() body: Partial<updateUserDto>,

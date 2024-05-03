@@ -104,4 +104,30 @@ export class ArticlesService {
 
         return result;
     }
+
+    async getAllArticles(id: string, page: number, perPage: number) {
+        const skip = (page - 1) * perPage;
+        const take = perPage;
+        const [articles, totalCount] = await Promise.all([
+            this.prismaService.article.findMany({
+                where: { userId: id },
+                skip,
+                take,
+            }),
+            this.prismaService.article.count({
+                where: { userId: id },
+            }),
+        ]);
+
+        return { articles, totalCount };
+    }
+    async getAllArticleById(id: string, artId: string) {
+        const article = await this.prismaService.article.findFirst({ where: { userId: id, id: artId } });
+
+        if (!article) {
+            throw new NotFoundException();
+        }
+
+        return article;
+    }
 }
