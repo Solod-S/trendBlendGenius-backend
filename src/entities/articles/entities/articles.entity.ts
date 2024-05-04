@@ -90,7 +90,7 @@ export class CREATE_ARTICLE_RESPONSE {
     constructor(statusCode: number, message: string = '', data: ARTICLE_DTO) {
         this.message = message;
         this.data = data;
-        this.statusCode = 201;
+        this.statusCode = statusCode;
     }
 }
 
@@ -110,7 +110,7 @@ export class CREATE_ARTICLE_UNAUTHORIZED_RESPONSE {
 
     constructor(statusCode: number, error: string = '') {
         this.error = error;
-        this.statusCode = 401;
+        this.statusCode = statusCode;
     }
 }
 
@@ -138,7 +138,35 @@ export class CREATE_ARTICLE_BAD_RESPONSE {
     constructor(statusCode: number, message: string = '', error: string = '') {
         this.message = message;
         this.error = error;
-        this.statusCode = 400;
+        this.statusCode = statusCode;
+    }
+}
+
+export class CREATE_ARTICLE_NOT_FOUND_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Not Found',
+    })
+    error: string;
+
+    @ApiProperty({
+        description: 'Message',
+        nullable: false,
+        default: 'Content not found',
+    })
+    message: string;
+
+    @ApiProperty({
+        description: 'Not Found',
+        nullable: false,
+        default: 404,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = statusCode;
     }
 }
 
@@ -183,6 +211,71 @@ export class GET_ARTICLES_UNAUTHORIZED_RESPONSE {
 
     constructor(statusCode: number, error: string = '') {
         this.error = error;
-        this.statusCode = 401;
+        this.statusCode = statusCode;
+    }
+}
+
+export class GET_ARTICLE_BY_ID_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({ description: 'Article information', type: [ARTICLE_DTO] })
+    data: ARTICLE_DTO;
+
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 200,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '', data: ARTICLE_DTO) {
+        this.message = message;
+        this.data = data;
+        this.statusCode = statusCode;
+    }
+}
+
+export class GET_ARTICLE_BY_ID_UNAUTHORIZED_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Unauthorized',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Unauthorized',
+        nullable: false,
+        default: 401,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = statusCode;
+    }
+}
+
+export class GET_ARTICLE_BY_ID_NOT_FOUND_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Not Found',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Not Found',
+        nullable: false,
+        default: 404,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = statusCode;
     }
 }

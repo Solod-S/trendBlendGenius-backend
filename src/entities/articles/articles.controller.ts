@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '@common/decorators';
@@ -7,9 +7,13 @@ import { ArticlesService } from './articles.service';
 import { createAtrticleDto } from './dto';
 import {
     CREATE_ARTICLE_BAD_RESPONSE,
+    CREATE_ARTICLE_NOT_FOUND_RESPONSE,
     CREATE_ARTICLE_RESPONSE,
     CREATE_ARTICLE_UNAUTHORIZED_RESPONSE,
     GET_ARTICLES_RESPONSE,
+    GET_ARTICLE_BY_ID_NOT_FOUND_RESPONSE,
+    GET_ARTICLE_BY_ID_RESPONSE,
+    GET_ARTICLE_BY_ID_UNAUTHORIZED_RESPONSE,
 } from './entities/articles.entity';
 
 @ApiTags('Articles')
@@ -34,6 +38,12 @@ export class ArticlesController {
         status: HttpStatus.BAD_REQUEST,
         description: 'Bad Request',
         type: CREATE_ARTICLE_BAD_RESPONSE,
+        isArray: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'Not found',
+        type: CREATE_ARTICLE_NOT_FOUND_RESPONSE,
         isArray: false,
     })
     @ApiBody({
@@ -93,7 +103,25 @@ export class ArticlesController {
         };
     }
     //GET ARTICLE BY ID
-
+    @ApiOperation({ summary: 'Get article by id' })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Success',
+        type: GET_ARTICLE_BY_ID_RESPONSE,
+        isArray: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        description: 'Unauthorized',
+        type: GET_ARTICLE_BY_ID_UNAUTHORIZED_RESPONSE,
+        isArray: false,
+    })
+    @ApiResponse({
+        status: HttpStatus.NOT_FOUND,
+        description: 'Not found',
+        type: GET_ARTICLE_BY_ID_NOT_FOUND_RESPONSE,
+        isArray: false,
+    })
     @Get('/:artId')
     async getAllArticleById(@Param('artId') artId: string, @CurrentUser('id') id: string) {
         console.log(`artId`, artId);
@@ -102,6 +130,17 @@ export class ArticlesController {
             message: 'Successful request',
             data: article,
             statusCode: 200,
+        };
+    }
+    //DELETE ARTICLE BY ID
+    @Delete('delete/:artId')
+    async deleteUser(@Param('artId') artId: string, @CurrentUser('id') id: string) {
+        console.log(`id, artId`, id, artId);
+
+        await this.articleService.deleteArticleById(id, artId);
+        return {
+            message: 'Successful request',
+            statusCode: 204,
         };
     }
 }

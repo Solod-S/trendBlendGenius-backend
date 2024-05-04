@@ -57,11 +57,6 @@ export class ArticlesService {
         if (query) params.q = query;
         if (!query) {
             throw new BadRequestException('Bad request - missing query');
-            //             {
-            //     "message": "Bad request - missing query",
-            //     "error": "Bad Request",
-            //     "statusCode": 400
-            // }
         }
         if (language) params.language = language;
 
@@ -69,11 +64,6 @@ export class ArticlesService {
         const newsData = await this.newsService.searchEverything(newsApiKey, params);
         if (newsData.articles.length <= 0) {
             throw new NotFoundException('Content not found');
-            //             {
-            //     "message": "Content not found",
-            //     "error": "Not Found",
-            //     "statusCode": 404
-            // }
         }
 
         // Checking whether this content has been found before
@@ -121,6 +111,7 @@ export class ArticlesService {
 
         return { articles, totalCount };
     }
+
     async getAllArticleById(id: string, artId: string) {
         const article = await this.prismaService.article.findFirst({ where: { userId: id, id: artId } });
 
@@ -129,5 +120,12 @@ export class ArticlesService {
         }
 
         return article;
+    }
+    async deleteArticleById(id: string, artId: string) {
+        const delArticle = await this.prismaService.article.delete({ where: { userId: id, id: artId } });
+        if (!delArticle) {
+            throw new NotFoundException();
+        }
+        return delArticle;
     }
 }
