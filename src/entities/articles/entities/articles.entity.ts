@@ -214,6 +214,25 @@ export class GET_ARTICLES_UNAUTHORIZED_RESPONSE {
         this.statusCode = statusCode;
     }
 }
+export class GET_ARTICLES_FORBIDDEN_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Forbidden',
+    })
+    message: string;
+    @ApiProperty({
+        description: 'Forbidden',
+        nullable: false,
+        default: 403,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '') {
+        this.message = message;
+        this.statusCode = statusCode;
+    }
+}
 
 export class GET_ARTICLE_BY_ID_RESPONSE {
     @ApiProperty({
@@ -261,6 +280,86 @@ export class GET_ARTICLE_BY_ID_UNAUTHORIZED_RESPONSE {
 }
 
 export class GET_ARTICLE_BY_ID_NOT_FOUND_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Not Found',
+    })
+    error: string;
+    @ApiProperty({
+        description: 'Not Found',
+        nullable: false,
+        default: 404,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, error: string = '') {
+        this.error = error;
+        this.statusCode = statusCode;
+    }
+}
+export class GET_ARTICLE_BY_ID_FORBIDDEN_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Forbidden',
+    })
+    message: string;
+    @ApiProperty({
+        description: 'Forbidden',
+        nullable: false,
+        default: 403,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '') {
+        this.message = message;
+        this.statusCode = statusCode;
+    }
+}
+
+export class DELETE_ARTICLE_BY_ID_RESPONSE {
+    @ApiProperty({
+        description: 'Response message',
+        nullable: false,
+        default: 'Successful request',
+    })
+    message: string;
+
+    @ApiProperty({
+        description: 'Success status',
+        nullable: false,
+        default: 204,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '') {
+        this.message = message;
+        this.statusCode = statusCode;
+    }
+}
+
+export class DELETE_ARTICLE_ID_FORBIDDEN_RESPONSE {
+    @ApiProperty({
+        description: 'Error message',
+        nullable: false,
+        default: 'Forbidden',
+    })
+    message: string;
+    @ApiProperty({
+        description: 'Forbidden',
+        nullable: false,
+        default: 403,
+    })
+    statusCode: number;
+
+    constructor(statusCode: number, message: string = '') {
+        this.message = message;
+        this.statusCode = statusCode;
+    }
+}
+
+export class DELETE_ARTICLE_ID_NOT_FOUND_RESPONSE {
     @ApiProperty({
         description: 'Error message',
         nullable: false,

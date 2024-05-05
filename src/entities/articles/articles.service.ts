@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { NewsService } from '@common/services/newsService/newsService.service';
@@ -8,6 +14,8 @@ import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import { newsapiArticleDto } from './dto';
+import { JwtPayload } from '@auth/interfaces';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class ArticlesService {
@@ -95,37 +103,56 @@ export class ArticlesService {
         return result;
     }
 
-    async getAllArticles(id: string, page: number, perPage: number) {
+    async getAllArticles(userId: string, user: JwtPayload, page: number, perPage: number) {
+        const whereClause: any = { userId: userId };
+
+        if (!user.roles.includes(Role.ADMIN) && user.id !== userId) {
+            throw new ForbiddenException();
+        }
+
         const skip = (page - 1) * perPage;
         const take = perPage;
         const [articles, totalCount] = await Promise.all([
             this.prismaService.article.findMany({
-                where: { userId: id },
+                where: whereClause,
                 skip,
                 take,
             }),
             this.prismaService.article.count({
-                where: { userId: id },
+                where: whereClause,
             }),
         ]);
 
         return { articles, totalCount };
     }
 
-    async getAllArticleById(id: string, artId: string) {
-        const article = await this.prismaService.article.findFirst({ where: { userId: id, id: artId } });
+    async getAllArticleById(user: JwtPayload, artId: string) {
+        const article = await this.prismaService.article.findFirst({ where: { id: artId } });
 
         if (!article) {
             throw new NotFoundException();
         }
+        if (user.id !== article.userId && !user.roles.includes(Role.ADMIN)) {
+            throw new ForbiddenException();
+        }
 
         return article;
     }
-    async deleteArticleById(id: string, artId: string) {
-        const delArticle = await this.prismaService.article.delete({ where: { userId: id, id: artId } });
-        if (!delArticle) {
+    async deleteArticleById(user: JwtPayload, artId: string) {
+        const whereClause: any = { id: artId };
+
+        if (!user.roles.includes(Role.ADMIN)) {
+            whereClause.userId = user.id;
+        }
+
+        const articleToDelete = await this.prismaService.article.findUnique({ where: whereClause });
+
+        if (!articleToDelete) {
             throw new NotFoundException();
         }
+
+        const delArticle = await this.prismaService.article.delete({ where: { id: artId } });
+
         return delArticle;
     }
 }
