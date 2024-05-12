@@ -16,17 +16,9 @@ export class RegisterDto {
 }
 
 export class updateUserDto {
-    @IsEmail()
-    email: string;
-
     @IsString()
     @MinLength(6)
     password: string;
-
-    @IsString()
-    @MinLength(6)
-    @Validate(IsPasswordsMatchingConstraint)
-    passwordRepet: string;
 
     @IsArray()
     @IsOptional()
@@ -35,9 +27,21 @@ export class updateUserDto {
     @IsOptional()
     query: string;
 
+    @IsOptional()
+    tone: string;
+
     @IsArray()
     @IsOptional()
     language: string[];
+
+    @IsOptional()
+    useEmojis: boolean;
+
+    @IsOptional()
+    useLink: boolean;
+
+    @IsOptional()
+    endWithQuestion: boolean;
 
     @IsArray()
     @IsOptional()

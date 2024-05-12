@@ -9,6 +9,8 @@ import {
     Res,
     UnauthorizedException,
     UseInterceptors,
+    UsePipes,
+    ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -81,13 +83,14 @@ export class AuthController {
         schema: { type: 'object', properties: { email: { type: 'string' }, password: { type: 'string' } } },
         examples: {
             example1: {
-                value: { email: 'test@gmail.com', password: '123456' },
+                value: { email: 'test@gmail.com', password: '123456', passwordRepet: '123456' },
                 description: 'User credential data example',
             },
         },
     })
     @UseInterceptors(ClassSerializerInterceptor)
     // for UserResponse transformer
+    @UsePipes(new ValidationPipe({ transform: true }))
     async register(@Body() dto: RegisterDto) {
         const user = await this.authService.register(dto);
 

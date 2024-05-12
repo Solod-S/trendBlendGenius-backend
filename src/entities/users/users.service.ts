@@ -118,16 +118,21 @@ export class UsersService {
         if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
             throw new ForbiddenException();
         }
-
+        console.log(`body`, body);
         const data: any = {};
-        if (body.password) data.password = this.hashPassword(body.password);
-        if (body.newsCategory) data.newsCategory = body.newsCategory;
-        if (body.query) data.query = body.query;
-        if (body.language) data.language = body.language;
-        if (body.country) data.country = body.country;
-        if (body.newsApiKey) data.newsApiKey = body.newsApiKey;
-        if (body.openAIkey) data.openAIkey = body.openAIkey;
+        if (body.hasOwnProperty('password')) data.password = this.hashPassword(body.password);
+        if (body.hasOwnProperty('newsCategory')) data.newsCategory = body.newsCategory;
+        if (body.hasOwnProperty('query')) data.query = body.query;
+        if (body.hasOwnProperty('tone')) data.tone = body.tone;
+        if (body.hasOwnProperty('language')) data.language = body.language;
+        if (body.hasOwnProperty('country')) data.country = body.country;
+        if (body.hasOwnProperty('useEmojis')) data.useEmojis = body.useEmojis;
+        if (body.hasOwnProperty('useLink')) data.useLink = body.useLink;
+        if (body.hasOwnProperty('endWithQuestion')) data.endWithQuestion = body.endWithQuestion;
+        if (body.hasOwnProperty('newsApiKey')) data.newsApiKey = body.newsApiKey;
+        if (body.hasOwnProperty('openAIkey')) data.openAIkey = body.openAIkey;
 
+        console.log(`data`, data);
         if (Object.keys(data).length === 0) {
             throw new BadRequestException();
         }
