@@ -68,7 +68,6 @@ export class ArticlesController {
         params: createAtrticleDto,
         @CurrentUser('id') id: string,
     ) {
-        console.log(`!!`, id);
         const { domain } = params;
 
         const data = await this.articleService.createNewArticle(id, domain);

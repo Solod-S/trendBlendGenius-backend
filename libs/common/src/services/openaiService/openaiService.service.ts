@@ -56,14 +56,13 @@ export class OpenAIService {
             default:
                 break;
         }
-        // useEmojis
 
         switch (config?.useEmojis) {
             case useEmojis.USE_EMOJIS:
-                rules += `\n\n- result article should use emojis.`;
+                rules += `\n\n- result must use and contains emojis.`;
                 break;
             case useEmojis.DONT_USE_EMOJIS:
-                rules += "\n\n- result article shouldn't contain any emojis.";
+                rules += "\n\n- result shouldn't contain any emojis.";
                 break;
 
             default:
@@ -72,19 +71,18 @@ export class OpenAIService {
 
         switch (config?.endWithQuestion) {
             case endWithQuestion.USE_END_WITH_QUESTION:
-                rules += '\n\n- result article should end with question.';
+                rules += '\n\n- result must end with question.';
                 break;
             case endWithQuestion.DONT_END_WITH_QUESTION:
-                rules += "\n\n- result article shouldn't end with question.";
+                rules += "\n\n- result shouldn't end with question.";
                 break;
 
             default:
                 break;
         }
 
-        rules += `\n\n- result article should be use ${characterLimit[domain][1]} completion_tokens or less. Target response length ${characterLimit[domain][2]} words or less.`;
-        rules += `\n\n- result article must take into account all the above rules, and not contain your personal comments like “I understand the task. Here is the response:”`;
-
+        rules += `\n\n- result should be use ${characterLimit[domain][1]} completion_tokens or less. Target response length ${characterLimit[domain][2]} words or less.`;
+        rules += `\n\n- result must take into account all the above rules, and not contain your personal comments like “I understand the task. Here is the response:”`;
         return rules;
     }
     async generateContent(apiKey: string, content: string) {
@@ -130,17 +128,17 @@ export class OpenAIService {
         try {
             const openai = new OpenAI({ apiKey });
 
-            let promt;
-
-            promt = `\n\nHere is the "content": \n\n"${content}" \n\n`;
-            const rules = this.createRules(config, domain);
-            promt += `\n\n${rules}`;
+            const promt = `\n\nHere is the "content": \n\n"${content}" \n\n`;
+            const rules = await this.createRules(config, domain);
+            let systemMessage = `You are an assistant, whorewrite the scrapped "content" from the site to tailor it specifically to the given topic "${title}". Result shouldn't contain main title: "${title}".`;
+            systemMessage += `As an assistant must follow such rules:" \n\n${rules}`;
+            console.log(`systemMessage`, systemMessage);
             const response = await openai.chat.completions.create({
                 model: 'gpt-3.5-turbo',
                 messages: [
                     {
                         role: 'system',
-                        content: `You are an assistant, whorewrite the scrapped "content" from the site to tailor it specifically to the given topic "${title}".`,
+                        content: systemMessage,
                     },
                     {
                         role: 'assistant',

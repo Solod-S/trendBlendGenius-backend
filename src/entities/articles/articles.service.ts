@@ -76,7 +76,8 @@ export class ArticlesService {
             try {
                 switch (currentState) {
                     case states.VALIDATE_USER:
-                        user = await this.userService.findOne(id);
+                        user = await this.userService.findOne(id, true);
+
                         if (!user) {
                             throw new UnauthorizedException(`User not found`);
                         }
@@ -104,7 +105,8 @@ export class ArticlesService {
                         break;
 
                     case states.CHECK_UNIQUENESS:
-                        articlesArr = await this.checkArticlesUniqueness(id, articleData);
+                        const articles = articleData.filter((art) => !art.url.includes('yahoo'));
+                        articlesArr = await this.checkArticlesUniqueness(id, articles);
                         if (articlesArr.length === 0) {
                             throw new NotFoundException('Unique content not found');
                         }
@@ -124,6 +126,7 @@ export class ArticlesService {
                         break;
 
                     case states.GENERATE_ARTICLE:
+                        console.log(`!!user!!`, user);
                         const config = {
                             tone: user.tone,
                             useEmojis: user.useEmojis,
