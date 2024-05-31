@@ -31,5 +31,6 @@ export const characterLimit = {
     'linkedin.com': [1250, 250, 150],
     'facebook.com': [1250, 250, 150],
     'twitter.com': [1250, 250, 150],
+    'x.com': [1250, 250, 150],
     'instagram.com': [1250, 250, 150],
 };

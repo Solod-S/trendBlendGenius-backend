@@ -74,6 +74,7 @@ export class AuthService {
             throw new UnauthorizedException(`Wrong password or email`);
         }
         const tokens = await this.generateTokens(user, agent);
+
         return { tokens, user };
     }
 

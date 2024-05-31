@@ -118,7 +118,7 @@ export class UsersService {
         if (user.id !== id && !user.roles.includes(Role.ADMIN)) {
             throw new ForbiddenException();
         }
-        console.log(`body`, body);
+
         const data: any = {};
         if (body.hasOwnProperty('password')) data.password = this.hashPassword(body.password);
         if (body.hasOwnProperty('newsCategory')) data.newsCategory = body.newsCategory;
@@ -132,7 +132,6 @@ export class UsersService {
         if (body.hasOwnProperty('newsApiKey')) data.newsApiKey = body.newsApiKey;
         if (body.hasOwnProperty('openAIkey')) data.openAIkey = body.openAIkey;
 
-        console.log(`data`, data);
         if (Object.keys(data).length === 0) {
             throw new BadRequestException();
         }
@@ -140,6 +139,7 @@ export class UsersService {
             where: { id },
             data, // Update only those fields that come in body
         });
+
         const tokens = await this.generateTokens(updatedUser, agent);
         return { tokens, updatedUser };
     }

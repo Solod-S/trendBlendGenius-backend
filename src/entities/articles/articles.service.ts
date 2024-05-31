@@ -202,6 +202,54 @@ export class ArticlesService {
         return { articles, totalCount };
     }
 
+    async getLasArticles(userId: string, user: JwtPayload) {
+        if (!user.roles.includes(Role.ADMIN) && user.id !== userId) {
+            throw new ForbiddenException();
+        }
+
+        const articles = await this.prismaService.article.findMany({
+            where: {
+                userId: userId,
+                createdAt: {
+                    gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+                },
+            },
+        });
+        // Initialize the number of articles for each day of the week
+        const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
+        // Initialize the array of days of the week
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const startIndex = daysOfWeek.indexOf(currentDay);
+        const orderedDays = [];
+
+        for (let i = 0; i < daysOfWeek.length; i++) {
+            orderedDays.push(daysOfWeek[(startIndex - i + daysOfWeek.length) % daysOfWeek.length]);
+        }
+
+        // Initialize the number of articles for each day of the week
+        const dayCounts = orderedDays.reduce((acc, day) => {
+            acc[day] = 0;
+            return acc;
+        }, {});
+
+        // Count articles by day of the week
+        articles.forEach((article) => {
+            const dayOfWeek = new Date(article.createdAt).toLocaleDateString('en-US', { weekday: 'long' });
+            if (dayCounts[dayOfWeek] !== undefined) {
+                dayCounts[dayOfWeek]++;
+            }
+        });
+
+        // Convert the dayCounts object to the required format
+        const response = orderedDays.map((day) => ({
+            time: day,
+            amount: dayCounts[day],
+        }));
+
+        return response;
+    }
+
     async getAllArticleById(user: JwtPayload, artId: string) {
         const article = await this.prismaService.article.findFirst({ where: { id: artId } });
 

@@ -121,6 +121,18 @@ export class ArticlesController {
             statusCode: 200,
         };
     }
+
+    //GET LAST WEEK ARTICLES
+    @Get('/lastweek')
+    async getLastArticles(@Query('userId') userId: string, @CurrentUser() user: JwtPayload) {
+        const data = await this.articleService.getLasArticles(userId, user);
+        return {
+            message: 'Successful request',
+            data,
+            statusCode: 200,
+        };
+    }
+
     //GET ARTICLE BY ID
     @ApiOperation({ summary: 'Get article by id' })
     @ApiResponse({

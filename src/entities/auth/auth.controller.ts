@@ -120,7 +120,6 @@ export class AuthController {
         },
     })
     async login(@Body() dto: LoginDto, @Res() res: Response, @UserАgent() agent: string) {
-        console.log(`dto`, dto);
         const { tokens, user } = await this.authService.login(dto, agent);
         if (!tokens || !user) {
             throw new BadRequestException(`Error login ${JSON.stringify(dto)}`);
@@ -134,7 +133,6 @@ export class AuthController {
     @ApiOperation({ summary: 'Logout' })
     @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: LOGOUT_RESPONSE, isArray: false })
     async logout(@Cookies(REFRESH_TOKEN) refreshToken: string, @Res() res: Response) {
-        console.log(`request.cookies`);
         if (!refreshToken) {
             res.status(HttpStatus.OK).json({ message: 'Successful request', statusCode: 200 });
             return;
