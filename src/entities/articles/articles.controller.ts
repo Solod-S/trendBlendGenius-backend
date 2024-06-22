@@ -133,6 +133,17 @@ export class ArticlesController {
         };
     }
 
+    //GET ARTICLES OVERVIEW
+    @Get('/articles-overview')
+    async getArticlesOverview(@Query('userId') userId: string, @CurrentUser() user: JwtPayload) {
+        const data = await this.articleService.geArticlesOverview(userId, user);
+        return {
+            message: 'Successful request',
+            data,
+            statusCode: 200,
+        };
+    }
+
     //GET ARTICLE BY ID
     @ApiOperation({ summary: 'Get article by id' })
     @ApiResponse({

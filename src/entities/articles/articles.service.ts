@@ -207,47 +207,90 @@ export class ArticlesService {
             throw new ForbiddenException();
         }
 
+        // Get articles for the last 7 days
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
         const articles = await this.prismaService.article.findMany({
             where: {
                 userId: userId,
                 createdAt: {
-                    gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+                    gte: oneWeekAgo,
                 },
             },
         });
-        // Initialize the number of articles for each day of the week
+
         const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-        // Initialize the array of days of the week
-        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const startIndex = daysOfWeek.indexOf(currentDay);
-        const orderedDays = [];
-
-        for (let i = 0; i < daysOfWeek.length; i++) {
-            orderedDays.push(daysOfWeek[(startIndex - i + daysOfWeek.length) % daysOfWeek.length]);
-        }
-
-        // Initialize the number of articles for each day of the week
-        const dayCounts = orderedDays.reduce((acc, day) => {
+        // Initialize article counters for each day of the week
+        const dayCounts = daysOfWeek.reduce((acc, day) => {
             acc[day] = 0;
             return acc;
         }, {});
 
-        // Count articles by day of the week
+        // Count the number of articles for each day of the week
         articles.forEach((article) => {
-            const dayOfWeek = new Date(article.createdAt).toLocaleDateString('en-US', { weekday: 'long' });
-            if (dayCounts[dayOfWeek] !== undefined) {
+            const createdAt = new Date(article.createdAt);
+            const dayOfWeek = createdAt.toLocaleDateString('en-US', { weekday: 'long' });
+            if (dayOfWeek === currentDay) {
+                // eliminate duplication of the amount for two “Saturdays” in different numbers
+                const currentDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                });
+                const articleDate = createdAt.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                });
+                if (currentDate === articleDate) {
+                    dayCounts[dayOfWeek]++;
+                }
+            } else {
+                // For all other days of the week, we take into account all articles
                 dayCounts[dayOfWeek]++;
             }
         });
 
-        // Convert the dayCounts object to the required format
-        const response = orderedDays.map((day) => ({
+        // Form the response in the required format
+        const response = daysOfWeek.map((day) => ({
             time: day,
             amount: dayCounts[day],
         }));
 
-        return response;
+        return response.reverse();
+    }
+
+    async geArticlesOverview(userId: string, user: JwtPayload) {
+        if (!user.roles.includes(Role.ADMIN) && user.id !== userId) {
+            throw new ForbiddenException();
+        }
+
+        // Get the total number of articles for all time
+        const totalArticlesCount = await this.prismaService.article.count({
+            where: {
+                userId: userId,
+            },
+        });
+
+        // Determine the start of the current month
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+        // Get the number of articles created for the current month
+        const monthlyArticlesCount = await this.prismaService.article.count({
+            where: {
+                userId: userId,
+                createdAt: {
+                    gte: startOfMonth,
+                },
+            },
+        });
+
+        return {
+            totalArticlesCount,
+            monthlyArticlesCount,
+        };
     }
 
     async getAllArticleById(user: JwtPayload, artId: string) {
