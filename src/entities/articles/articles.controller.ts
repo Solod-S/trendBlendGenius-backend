@@ -69,7 +69,7 @@ export class ArticlesController {
         @CurrentUser('id') id: string,
     ) {
         const { domain } = params;
-
+        console.log(`id, domain`, id, domain);
         const data = await this.articleService.createNewArticle(id, domain);
 
         return { message: 'Successful request', data, statusCode: 201 };
